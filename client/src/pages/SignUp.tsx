@@ -2,13 +2,14 @@ import { useFormik } from "formik";
 import { signupValidation } from "../validation/authValidation";
 import { CssBaseline } from "@mui/material";
 import AppTheme from "../components/AppTheme";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
 import { signup } from "../store/features/auth/auth";
 import { toast } from "react-toastify";
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
+  const navigate = useNavigate();
   const dispatch = useDispatch<AppDispatch>();
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
@@ -23,6 +24,7 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
         const response = await dispatch(signup(values)).unwrap();
         if (response?.statusCode === 200) {
           toast.success(response.message);
+          navigate("/signin");
         } else {
           toast.success(response.message);
         }

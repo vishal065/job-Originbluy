@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
           >
             <ListItemText
               primary={
-                <Link to="/dashboard" className="w-full">
+                <Link to="/" className="w-full">
                   Dashboard
                 </Link>
               }

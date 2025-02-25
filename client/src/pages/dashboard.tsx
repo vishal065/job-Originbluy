@@ -9,7 +9,6 @@ import {
 } from "@mui/material";
 
 const Dashboard: React.FC = () => {
-  // Dummy data for demonstration
   const totalImages = 120;
   const totalVideos = 45;
   const totalUsers = 300;
