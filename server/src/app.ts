@@ -5,10 +5,10 @@ import indexRoute from "./routers/index.router";
 import cookieParser from "cookie-parser";
 import errorMiddleware from "./middleware/error.middleware";
 const app: Application = express();
-
+// [`http://localhost:3000`, "http://localhost:5173/signin", `*`]
 app.use(
   cors({
-    origin: [`http://localhost:3000`, `*`],
+    origin:"*",
     credentials: true,
   })
 );

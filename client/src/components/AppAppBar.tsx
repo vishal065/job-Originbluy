@@ -14,6 +14,8 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import ColorModeIconDropdown from "./ColorModeIconDropdown";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -33,10 +35,12 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
+  const state = useSelector((state: RootState) => state.auth);
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
+
 
   return (
     <AppBar
@@ -66,22 +70,36 @@ export default function AppAppBar() {
             }}
             className="space-x-2"
           >
-            <Button
-              color="primary"
-              variant="text"
-              size="small"
-              className="hover:bg-gray-200 dark:hover:bg-gray-700"
-            >
-              <Link to={`/signin`}>Sign in</Link>
-            </Button>
-            <Button
-              color="primary"
-              variant="contained"
-              size="small"
-              className="hover:bg-blue-600"
-            >
-              <Link to={`/signup`}>Sign up</Link>
-            </Button>
+            {state ? (
+              <div>
+                <Button
+                  color="primary"
+                  variant="text"
+                  size="small"
+                  className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                >
+                  <Link to={`/signin`}>Sign in</Link>
+                </Button>
+                <Button
+                  color="primary"
+                  variant="contained"
+                  size="small"
+                  className="hover:bg-blue-600"
+                >
+                  <Link to={`/signup`}>Sign up</Link>
+                </Button>
+              </div>
+            ) : (
+              <Button
+                color="primary"
+                variant="text"
+                size="small"
+                className="hover:bg-gray-200 dark:hover:bg-gray-700"
+                onClick={() => ""}
+              >
+                logout
+              </Button>
+            )}
             <ColorModeIconDropdown />
           </Box>
           <Box

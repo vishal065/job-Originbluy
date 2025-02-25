@@ -3,8 +3,13 @@ import { signupValidation } from "../validation/authValidation";
 import { CssBaseline } from "@mui/material";
 import AppTheme from "../components/AppTheme";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../store/store";
+import { signup } from "../store/features/auth/auth";
+import { toast } from "react-toastify";
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
+  const dispatch = useDispatch<AppDispatch>();
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
       initialValues: {
@@ -14,7 +19,14 @@ export default function SignUp(props: { disableCustomTheme?: boolean }) {
       },
       validationSchema: signupValidation,
 
-      onSubmit: async () => {},
+      onSubmit: async (values) => {
+        const response = await dispatch(signup(values)).unwrap();
+        if (response?.statusCode === 200) {
+          toast.success(response.message);
+        } else {
+          toast.success(response.message);
+        }
+      },
     });
 
   return (

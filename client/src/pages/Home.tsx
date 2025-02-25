@@ -1,6 +1,6 @@
 import { Box, Container } from "@mui/material";
 
-function Hero() {
+function Home() {
   return (
     <Box
       id="hero"
@@ -17,11 +17,14 @@ function Hero() {
           pb: { xs: 8, sm: 12 },
         }}
       >
-        {" "}
-        <div className=""></div>
+        <div className="">
+          <h1 className="text-2xl p-2">
+            Login or Sign up to upload images or video
+          </h1>
+        </div>
       </Container>
     </Box>
   );
 }
 
-export default Hero;
+export default Home;

@@ -4,6 +4,10 @@ import AppTheme from "../components/AppTheme";
 import ForgotPassword from "../components/ForgotPassword";
 import { signinValidation } from "../validation/authValidation";
 import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { login } from "../store/features/auth/auth";
+import { AppDispatch } from "../store/store";
+import { toast } from "react-toastify";
 
 export default function SignIn({
   disableCustomTheme,
@@ -11,9 +15,9 @@ export default function SignIn({
   disableCustomTheme?: boolean;
 }) {
   const [open, setOpen] = useState(false);
-
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   const { values, errors, touched, handleBlur, handleChange, handleSubmit } =
     useFormik({
@@ -23,7 +27,15 @@ export default function SignIn({
       },
       enableReinitialize: true,
       validationSchema: signinValidation,
-      onSubmit: async () => {},
+      onSubmit: async (values: { email: string; password: string }) => {
+        const response = await dispatch(login(values)).unwrap();
+
+        if (response?.statusCode === 200) {
+          toast.success(response.message);
+        } else {
+          toast.success(response.message);
+        }
+      },
     });
 
   return (

@@ -75,7 +75,6 @@ const logout = asyncHandler(async (req: Request, res: Response) => {
       .status(200)
       .clearCookie("accessToken")
       .json(new ApiResponse(200, "Logout Successfully", undefined));
-      
   } catch (error) {
     return res
       .status(500)

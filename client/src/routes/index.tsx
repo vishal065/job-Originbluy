@@ -1,21 +1,37 @@
-import { Route, Routes } from "react-router-dom";
+import { Navigate, Route, Routes } from "react-router-dom";
 import NotFoundPage from "../pages/Notfound";
-import SignUp from "../pages/SignUp";
-// import Home from "../pages/Home";
-import SignIn from "../pages/SignIn";
-import UserLayout from "./UserLayout";
-import { UserPublicRoutes } from "./UserPublicRoutes";
+import { UserPrivateRoutes } from "./UserPrivateRoutes";
+import { useSelector } from "react-redux";
+import { RootState } from "../store/store";
+import { userAuthRoute } from "./userAuthRoute";
+import PrivateLayout from "./PrivateLayout";
+import PublicLayout from "./PublicLayout";
 
 const RootRouting = () => {
+  const { auth } = useSelector((state: RootState) => state.auth);
+  console.log("RootRouting ", auth.auth);
+
   return (
     <Routes>
-      <Route path="/" element={<UserLayout />}>
-        {UserPublicRoutes.map((item, i) => (
-          <Route path={item.path} key={i} element={item.element} />
-        ))}
-      </Route>
-      <Route path="/signup" element={<SignUp />} />
-      <Route path="/signin" element={<SignIn />} />
+      {auth.auth && (
+        <Route element={<PrivateLayout />}>
+          {UserPrivateRoutes.map((item, i) => (
+            <Route path={item.path} key={i} element={item.element} />
+          ))}
+        </Route>
+      )}
+      {!auth.auth ? (
+        <Route element={<PublicLayout />}>
+          {userAuthRoute.map((item, i) => (
+            <Route path={item.path} key={i} element={item.element} />
+          ))}
+        </Route>
+      ) : (
+        userAuthRoute.map((item, i) => (
+          <Route path={item.path} key={i} element={<Navigate to={"/"} />} />
+        ))
+      )}
+
       <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
