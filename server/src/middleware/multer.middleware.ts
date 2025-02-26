@@ -3,11 +3,11 @@ import multer, { type FileFilterCallback } from "multer";
 
 const storage = multer.diskStorage({
   destination: function (_req: Request, _file: Express.Multer.File, cb) {
-    cb(null, "/public/temp");
+    cb(null, "./public/temp");
   },
   filename: function (_req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, file.fieldname + "-" + uniqueSuffix);
+    const uniqueSuffix = Date.now();
+    cb(null, file.originalname + "-" + uniqueSuffix);
   },
 });
 
@@ -26,4 +26,4 @@ const fileFilter = (
   }
 };
 
-export const upload = multer({ storage: storage, fileFilter }).single("file");
+export const upload = multer({ storage: storage, fileFilter });

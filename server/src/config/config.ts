@@ -8,6 +8,12 @@ const CONFIG = {
   // JWT
   ACCESS_TOKEN_EXPIRY: process.env.ACCESS_TOKEN_EXPIRY,
   ACCESS_TOKEN_SECRET: process.env.ACCESS_TOKEN_SECRET as string,
+
+  //AWS
+  REGION: process.env.REGION as string,
+  BUCKET_NAME: process.env.BUCKET_NAME as string,
+  ACCESS_KEY_ID:process.env.BUCKET_NAME as string,
+  SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY as string,
 };
 
 export default CONFIG;

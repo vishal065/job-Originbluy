@@ -8,7 +8,7 @@ const app: Application = express();
 // [`http://localhost:3000`, "http://localhost:5173/signin", `*`]
 app.use(
   cors({
-    origin:"*",
+    origin: "*",
     credentials: true,
   })
 );
