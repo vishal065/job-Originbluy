@@ -9,18 +9,17 @@ import PublicLayout from "./PublicLayout";
 
 const RootRouting = () => {
   const { auth } = useSelector((state: RootState) => state.auth);
-  console.log("RootRouting ", auth.auth);
 
   return (
     <Routes>
-      {auth.auth && (
+      {auth?.statusCode === 200 && auth?.data.accessToken && (
         <Route element={<PrivateLayout />}>
           {UserPrivateRoutes.map((item, i) => (
             <Route path={item.path} key={i} element={item.element} />
           ))}
         </Route>
       )}
-      {!auth.auth ? (
+      {auth?.statusCode != 200 ? (
         <Route element={<PublicLayout />}>
           {userAuthRoute.map((item, i) => (
             <Route path={item.path} key={i} element={item.element} />

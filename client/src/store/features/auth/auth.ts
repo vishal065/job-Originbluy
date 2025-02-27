@@ -45,9 +45,9 @@ const login = createAsyncThunk("auth/login", async (data: LoginData) => {
     data
   );
   if (res.data.statusCode === 200) {
-    localStorage.setItem("user", JSON.stringify(""));
+    return res.data;
   }
-  return res.data;
+  return [];
 });
 const signup = createAsyncThunk("auth/signup", async (data: SignupData) => {
   const res = await axios.post(
@@ -59,17 +59,17 @@ const signup = createAsyncThunk("auth/signup", async (data: SignupData) => {
   return res.data;
 });
 
-export const authSlice = createSlice({
-  name: "auth",
-  initialState,
-  reducers: {},
-  extraReducers: (builder) => {
-    builder.addCase(login.fulfilled, (state, action) => {
-      state.auth = action.payload;
-    });
-  },
-});
+  export const authSlice = createSlice({
+    name: "auth",
+    initialState,
+    reducers: {},
+    extraReducers: (builder) => {
+      builder.addCase(login.fulfilled, (state, action) => {
+        state.auth = action.payload;
+      });
+    },
+  });
 
-export { login, signup };
+  export { login, signup };
 
 export default authSlice.reducer;

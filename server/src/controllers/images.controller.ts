@@ -1,8 +1,8 @@
 import type { Request, Response } from "express";
 import { asyncHandler } from "../utils/asyncHandler";
-import { deleteFile, uploadImageFile } from "../utils/handleBucket";
+import { deleteFile, getObjectURLs, uploadFile } from "../utils/handleBucket";
 import { ApiError } from "../utils/ApiError";
-import ImagesModel from "../model/Image.models";
+import ImagesModel, { type Iimage } from "../model/Image.models";
 import { ApiResponse } from "../utils/ApiResponse";
 
 const uploadImage = asyncHandler(async (req: Request, res: Response) => {
@@ -12,7 +12,9 @@ const uploadImage = asyncHandler(async (req: Request, res: Response) => {
     return res.status(400).json({ error: "No file provided" });
   }
   try {
-    const result = await uploadImageFile("images", file);
+    const result = await uploadFile("images", file);
+    
+
     if (!result) {
       return res.status(400).json(new ApiError(400, "Failed to upload image"));
     }
@@ -37,8 +39,19 @@ const deleteImage = asyncHandler(async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
-    const data = await deleteFile("images", id);
+    const data = (await ImagesModel.findById(id)) as Iimage;
     if (!data) {
+    }
+
+    const image = await deleteFile(data.key);
+
+    if (!image) {
+      return res.status(400).json(new ApiError(400, "Failed to delete Image"));
+    }
+
+    const deleted = await ImagesModel.findByIdAndDelete(id);
+
+    if (!deleted) {
       return res.status(400).json(new ApiError(400, "Failed to delete Image"));
     }
     return res
@@ -51,6 +64,8 @@ const deleteImage = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllImages = asyncHandler(async (req: Request, res: Response) => {
   try {
+    console.log("1");
+    
     const { query } = req;
 
     const limit = Number(query.limit) || 1;
@@ -62,8 +77,23 @@ const getAllImages = asyncHandler(async (req: Request, res: Response) => {
       .limit(limit)
       .sort({ createdAt: -1 });
 
+      console.log("2");
     if (!data)
       return res.status(400).json(new ApiError(400, "Failed to get data"));
+
+    const beforeSignedURL = data.map((item) => item.key);
+
+    const SignedURL = await getObjectURLs(beforeSignedURL);
+
+    data.forEach((item) => {
+      const matchingItem = SignedURL.find((element) =>
+        element.includes(item.key)
+      );
+      if (matchingItem) {
+        item.URL = matchingItem;
+      }
+    });
+    console.log("3");
 
     return res
       .status(200)

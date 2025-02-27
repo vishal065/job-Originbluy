@@ -1,6 +1,11 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
-const ImagesSchema = new mongoose.Schema(
+export interface Iimage extends Document {
+  key: string;
+  URL: string;
+  UserID: Types.ObjectId;
+}
+const ImagesSchema = new mongoose.Schema<Iimage>(
   {
     key: {
       type: String,
@@ -13,7 +18,7 @@ const ImagesSchema = new mongoose.Schema(
       required: true,
     },
     UserID: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
@@ -21,6 +26,6 @@ const ImagesSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const ImagesModel = mongoose.model("images", ImagesSchema);
+const ImagesModel = mongoose.model<Iimage>("images", ImagesSchema);
 
 export default ImagesModel;

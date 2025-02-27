@@ -1,6 +1,12 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 
-const VideosSchema = new mongoose.Schema(
+export interface Ivideo extends Document {
+  key: string;
+  URL: string;
+  UserID: Types.ObjectId;
+}
+
+const VideosSchema = new mongoose.Schema<Ivideo>(
   {
     key: {
       type: String,
@@ -13,7 +19,7 @@ const VideosSchema = new mongoose.Schema(
       required: true,
     },
     UserID: {
-      type: mongoose.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "user",
       required: true,
     },
@@ -21,6 +27,6 @@ const VideosSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const VideosModel = mongoose.model("videos", VideosSchema);
+const VideosModel = mongoose.model<Ivideo>("videos", VideosSchema);
 
 export default VideosModel;
