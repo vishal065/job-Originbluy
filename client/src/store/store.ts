@@ -1,5 +1,5 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
-import { authSlice } from "./features/auth/auth";
+import { authSlice } from "./features/auth/authSlice";
 import { imageSlice } from "./features/images/imageSlice";
 import {
   FLUSH,
@@ -12,20 +12,8 @@ import {
   REHYDRATE,
 } from "redux-persist";
 import storage from "redux-persist/lib/storage";
-
-// const authPersistConfig = {
-//   key: "root",
-//   storage,
-// };
-
-// const rootReducer = combineReducers({
-//   auth: persistReducer(authPersistConfig, authSlice.reducer),
-//   images: ImageSlice.reducer,
-// });
-
-// export const store = configureStore({
-//   reducer: rootReducer,
-// });
+import { axiosHandler } from "../hooks/axiosHandler";
+import { VideoSlice } from "./features/videos/videoSlice";
 
 const persistConfig = {
   key: "root",
@@ -36,6 +24,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   auth: authSlice.reducer,
   images: imageSlice.reducer,
+  videos: VideoSlice.reducer,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
@@ -48,6 +37,17 @@ export const store = configureStore({
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
     }),
+});
+
+store.subscribe(() => {
+  const state = store.getState();
+  const token = state.auth?.auth?.data?.accessToken;
+
+  if (token) {
+    axiosHandler.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+  } else {
+    delete axiosHandler.defaults.headers.common["Authorization"];
+  }
 });
 
 export const persistor = persistStore(store);

@@ -5,9 +5,11 @@ import ForgotPassword from "../components/ForgotPassword";
 import { signinValidation } from "../validation/authValidation";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { login } from "../store/features/auth/auth";
 import { AppDispatch } from "../store/store";
 import { toast } from "react-toastify";
+import { login } from "../store/features/auth/authActions";
+
+
 
 export default function SignIn({
   disableCustomTheme,

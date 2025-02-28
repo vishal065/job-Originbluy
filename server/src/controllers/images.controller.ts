@@ -13,7 +13,6 @@ const uploadImage = asyncHandler(async (req: Request, res: Response) => {
   }
   try {
     const result = await uploadFile("images", file);
-    
 
     if (!result) {
       return res.status(400).json(new ApiError(400, "Failed to upload image"));
@@ -26,9 +25,15 @@ const uploadImage = asyncHandler(async (req: Request, res: Response) => {
     });
 
     await data.save();
+    const savedData = await data.save();
+
+    if (savedData) {
+      const SignedURL = await getObjectURLs([data.key]);
+      data.URL = SignedURL[0];
+    }
     return res
       .status(200)
-      .json(new ApiResponse(200, "File uploaded successfully", data));
+      .json(new ApiResponse(200, "File uploaded successfully", savedData));
   } catch (error) {
     console.error("Error uploading file:", error);
     res.status(500).json(new ApiError(500, "Something went wrong", [error]));
@@ -64,8 +69,6 @@ const deleteImage = asyncHandler(async (req: Request, res: Response) => {
 
 const getAllImages = asyncHandler(async (req: Request, res: Response) => {
   try {
-    console.log("1");
-    
     const { query } = req;
 
     const limit = Number(query.limit) || 1;
@@ -77,7 +80,6 @@ const getAllImages = asyncHandler(async (req: Request, res: Response) => {
       .limit(limit)
       .sort({ createdAt: -1 });
 
-      console.log("2");
     if (!data)
       return res.status(400).json(new ApiError(400, "Failed to get data"));
 
@@ -93,7 +95,6 @@ const getAllImages = asyncHandler(async (req: Request, res: Response) => {
         item.URL = matchingItem;
       }
     });
-    console.log("3");
 
     return res
       .status(200)

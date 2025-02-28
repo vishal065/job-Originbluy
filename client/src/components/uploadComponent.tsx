@@ -1,27 +1,38 @@
-import axios from "axios";
 import { useState } from "react";
+import { useDispatch } from "react-redux";
 import { toast } from "react-toastify";
+import { AppDispatch } from "../store/store";
+import { uploadImages } from "../store/features/images/imagesAction";
+import { uploadvideo } from "../store/features/videos/videoAction";
 
 interface UploadFileProp {
   open: boolean;
   handleClose: () => void;
   label: string;
+  fileType: string;
 }
 
 export default function UploadFile({
   open,
   handleClose,
   label,
+  fileType,
 }: UploadFileProp) {
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
       const selectedFile = e.target.files[0];
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
+      if (selectedFile.type.includes(`${fileType}/`)) {
+        setFile(selectedFile);
+        setPreview(URL.createObjectURL(selectedFile));
+      } else {
+        setFile(null);
+        toast.error(`Please select a valid ${fileType}`);
+      }
     }
   };
 
@@ -30,13 +41,24 @@ export default function UploadFile({
     setUploading(true);
 
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append(`${fileType}`, file);
 
     try {
-      const response = await axios.post("/api/upload", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-      alert("Upload Successful: " + response.data.url);
+      let data;
+      if (fileType === "image") {
+        data = dispatch(uploadImages(formData)).unwrap();
+      } else if (fileType === "video") {
+        console.log("yeh wala chala");
+        
+        data = dispatch(uploadvideo(formData)).unwrap();
+      }
+
+      data?.then((item) =>
+        item?._id && item?._id.trim() != ""
+          ? toast.success("File uploaded successfully")
+          : null
+      );
+      handleClose();
     } catch (error) {
       console.error(error);
       alert("Upload Failed");
@@ -58,7 +80,7 @@ export default function UploadFile({
       {/* Modal container */}
       <div className="fixed inset-0 flex items-center justify-center z-50">
         <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg max-w-md w-full p-6">
-          <h2 className="text-xl font-bold mb-4">{label}</h2>
+          <h2 className="text-xl font-bold mb-4 ">{label}</h2>
           <p className="mb-4 text-gray-700 dark:text-gray-300">{}</p>
 
           <div className="mb-4">
@@ -73,7 +95,6 @@ export default function UploadFile({
             />
           </div>
           <div>
-            {" "}
             {preview && (
               <>
                 {file?.type.startsWith("video") ? (

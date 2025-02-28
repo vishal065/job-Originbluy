@@ -14,8 +14,10 @@ import CloseRoundedIcon from "@mui/icons-material/CloseRounded";
 import type {} from "@mui/material/themeCssVarsAugmentation";
 import ColorModeIconDropdown from "./ColorModeIconDropdown";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
-import { RootState } from "../store/store";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch, RootState } from "../store/store";
+import { logout } from "../store/features/auth/authActions";
+
 
 const StyledToolbar = styled(Toolbar)(({ theme }) => ({
   display: "flex",
@@ -36,11 +38,11 @@ const StyledToolbar = styled(Toolbar)(({ theme }) => ({
 export default function AppAppBar() {
   const [open, setOpen] = React.useState(false);
   const state = useSelector((state: RootState) => state.auth);
+  const dispatch = useDispatch<AppDispatch>();
 
   const toggleDrawer = (newOpen: boolean) => () => {
     setOpen(newOpen);
   };
-
 
   return (
     <AppBar
@@ -70,7 +72,7 @@ export default function AppAppBar() {
             }}
             className="space-x-2"
           >
-            {state ? (
+            {!state.auth?.data.accessToken ? (
               <div>
                 <Button
                   color="primary"
@@ -95,7 +97,9 @@ export default function AppAppBar() {
                 variant="text"
                 size="small"
                 className="hover:bg-gray-200 dark:hover:bg-gray-700"
-                onClick={() => ""}
+                onClick={() => {
+                  dispatch(logout());
+                }}
               >
                 logout
               </Button>

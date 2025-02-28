@@ -5,8 +5,9 @@ import AppTheme from "../components/AppTheme";
 import { Link, useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { AppDispatch } from "../store/store";
-import { signup } from "../store/features/auth/auth";
 import { toast } from "react-toastify";
+import { signup } from "../store/features/auth/authActions";
+
 
 export default function SignUp(props: { disableCustomTheme?: boolean }) {
   const navigate = useNavigate();

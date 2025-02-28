@@ -1,4 +1,5 @@
-import { Box, Container, Grid } from "@mui/material";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { Box, Container, Grid2 } from "@mui/material";
 import ImageCard from "../components/ImageCard";
 import React, { useEffect, useState } from "react";
 import UploadFile from "../components/uploadComponent";
@@ -11,18 +12,18 @@ const Images: React.FC = () => {
   const [open, setOpen] = useState(false);
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  useSelector((state: RootState) => state.images);
+  const state = useSelector((state: RootState) => state.images);
   const dispatch = useDispatch<AppDispatch>();
-
-  // const jsonString = JSON.parse(localStorage.getItem("persist:root"));
-
-  // const authData = JSON.parse(jsonString.auth).auth;
-  // console.log(authData);
+  console.log(state.images);
 
   useEffect(() => {
-    dispatch(getImages());
-    console.log();
-  }, []);
+    async function test() {
+      const data = await dispatch(getImages()).unwrap();
+
+      return data;
+    }
+    test();
+  }, [dispatch]);
 
   return (
     <Box
@@ -49,35 +50,32 @@ const Images: React.FC = () => {
         <div className="flex w-full justify-end  mx-2 -mt-12 mb-12 ">
           <button
             onClick={handleClickOpen}
-            className="bg-blue-600 w-[10%] p-2 font-semibold rounded-md "
+            className="bg-blue-600 w-[10%] p-2 font-semibold rounded-md"
           >
             Upload
           </button>
         </div>
-        <Grid
+        <Grid2
           container
           spacing={3}
           justifyContent="center"
-          sx={{ flexWrap: "wrap" }} // Ensures no overflow
+          sx={{ flexWrap: "wrap" }}
         >
-          {["1", "2", "3", "4", "5"].map((imageUrl) => (
-            <Grid
-              item
-              key={imageUrl}
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              xl={2.5}
-              sx={{ maxWidth: "100%" }}
-            >
-              <ImageCard />
-            </Grid>
-          ))}
-        </Grid>
+          {state.images &&
+            state.images?.map((item: any) => (
+              <Grid2 key={item?.URL} sx={{ maxWidth: "100%" }}>
+                <ImageCard item={item} />
+              </Grid2>
+            ))}
+        </Grid2>
       </Container>
       {open && (
-        <UploadFile open={open} handleClose={handleClose} label={label} />
+        <UploadFile
+          open={open}
+          handleClose={handleClose}
+          label={label}
+          fileType="image"
+        />
       )}
     </Box>
   );

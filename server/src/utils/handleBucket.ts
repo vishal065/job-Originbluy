@@ -63,7 +63,7 @@ async function uploadFile(path: string, file: Express.Multer.File) {
         console.error("Error removing temporary file:", err);
       }
     });
-    console.log("error in uploading file", error);
+    console.error("error in uploading file", error);
   }
 }
 

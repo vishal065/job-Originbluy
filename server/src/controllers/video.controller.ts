@@ -7,16 +7,15 @@ import VideosModel, { type Ivideo } from "../model/Video.models";
 
 const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
   const file = req.file;
-  
 
   if (!file) {
     return res.status(400).json({ error: "No file provided" });
   }
   try {
     const result = await uploadFile("videos", file);
-   
+
     if (!result) {
-      return res.status(400).json(new ApiError(400, "Failed to upload image"));
+      return res.status(400).json(new ApiError(400, "Failed to upload video"));
     }
 
     const data = new VideosModel({
@@ -25,10 +24,15 @@ const uploadVideo = asyncHandler(async (req: Request, res: Response) => {
       UserID: req.user?._id,
     });
 
-    await data.save();
+    const savedData = await data.save();
+
+    if (savedData) {
+      const SignedURL = await getObjectURLs([data.key]);
+      data.URL = SignedURL[0];
+    }
     return res
       .status(200)
-      .json(new ApiResponse(200, "File uploaded successfully", data));
+      .json(new ApiResponse(200, "File uploaded successfully", savedData));
   } catch (error) {
     console.error("Error uploading file:", error);
     res.status(500).json(new ApiError(500, "Something went wrong", [error]));
@@ -43,20 +47,20 @@ const deleteVideo = asyncHandler(async (req: Request, res: Response) => {
     if (!data) {
     }
 
-    const image = await deleteFile(data.key);
+    const video = await deleteFile(data.key);
 
-    if (!image) {
-      return res.status(400).json(new ApiError(400, "Failed to delete Image"));
+    if (!video) {
+      return res.status(400).json(new ApiError(400, "Failed to delete video"));
     }
 
     const deleted = await VideosModel.findByIdAndDelete(id);
 
     if (!deleted) {
-      return res.status(400).json(new ApiError(400, "Failed to delete Image"));
+      return res.status(400).json(new ApiError(400, "Failed to delete video"));
     }
     return res
       .status(200)
-      .json(new ApiResponse(200, "Image deleted successfully", undefined));
+      .json(new ApiResponse(200, "video deleted successfully", undefined));
   } catch (error) {
     res.status(500).json(new ApiError(500, "Something went wrong", [error]));
   }
@@ -111,7 +115,7 @@ const playVideo = asyncHandler(async (req, res) => {
       .status(200)
       .json(new ApiResponse(200, "Data fetch successfully", url));
   } catch (error) {
-    console.log(error);
+    console.error(error);
 
     res.status(500).json(new ApiError(500, "Something went wrong", [error]));
   }

@@ -5,10 +5,10 @@ import CONFIG from "./config/config";
 dbConnect()
   .then(() => {
     app.listen(CONFIG.PORT, () => {
-      console.log("server is running on PORT ", CONFIG.PORT);
+      console.info("server is running on PORT ", CONFIG.PORT);
     });
   })
   .catch((error) => {
-    console.log(error);
+    console.error(error);
     process.exit(1);
   });

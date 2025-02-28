@@ -8,11 +8,11 @@ const app: Application = express();
 // [`http://localhost:3000`, "http://localhost:5173/signin", `*`]
 app.use(
   cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
-app.use(helmet());
+// app.use(helmet());
 app.use(express.json());
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));

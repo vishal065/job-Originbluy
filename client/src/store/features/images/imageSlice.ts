@@ -1,14 +1,21 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { deleteImage, getImages, Image, uploadImages } from "./imagesAction";
+import { createSlice } from "@reduxjs/toolkit";
 
-import { getImages, Image, LoadingType, uploadImages } from "./imagesAction";
+export enum LoadingType {
+  Idle = "idle",
+  Pending = "pending",
+  Succeeded = "succeeded",
+  Failed = "failed",
+}
 
 export interface ImagesState {
-  images: Image[];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  images: any | null;
   loading: LoadingType;
 }
 
 const initialState: ImagesState = {
-  images: [],
+  images: null,
   loading: LoadingType.Idle,
 };
 
@@ -17,19 +24,16 @@ export const imageSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addCase(
-      uploadImages.fulfilled,
-      (state, action: PayloadAction<Image>) => {
-        state.images.push(action.payload);
-      }
-    );
-    builder.addCase(
-      getImages.fulfilled,
-      (state, action: PayloadAction<Image[]>) => {
-        state.images = action.payload;
-      }
-    );
+    builder.addCase(uploadImages.fulfilled, (state, action) => {
+      state.images.unshift(action.payload);
+    });
+    builder.addCase(getImages.fulfilled, (state, action) => {
+      state.images = action.payload;
+    });
+    builder.addCase(deleteImage.fulfilled, (state, action) => {
+      state.images =
+        state.images &&
+        state.images.filter((image: Image) => image._id !== action.meta.arg);
+    });
   },
 });
-
-export default imageSlice.reducer;

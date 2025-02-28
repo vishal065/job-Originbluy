@@ -3,14 +3,27 @@ import Card from "@mui/material/Card";
 import CardMedia from "@mui/material/CardMedia";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useDispatch } from "react-redux";
+import { deleteImage } from "../store/features/images/imagesAction";
+import { AppDispatch } from "../store/store";
 
-const ImageCard: React.FC = () => {
+interface ImageCardProps {
+  item: {
+    _id: string;
+    URL: string;
+  };
+}
+
+const ImageCard: React.FC<ImageCardProps> = ({ item }) => {
+  const dispatch = useDispatch<AppDispatch>();
+
   return (
     <Card
       sx={{
         width: "100%",
         maxWidth: 280, // Ensures it doesn't stretch
         boxShadow: 3,
+
         position: "relative",
         borderRadius: 2,
         overflow: "hidden",
@@ -19,7 +32,10 @@ const ImageCard: React.FC = () => {
       <CardMedia
         component="img"
         height="200"
-        image="https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg"
+        image={
+          item?.URL ??
+          "https://static.vecteezy.com/system/resources/thumbnails/036/324/708/small/ai-generated-picture-of-a-tiger-walking-in-the-forest-photo.jpg"
+        }
         alt="Display"
         sx={{
           objectFit: "cover",
@@ -34,6 +50,7 @@ const ImageCard: React.FC = () => {
           backgroundColor: "rgba(255,255,255,0.8)",
           "&:hover": { backgroundColor: "rgba(255,255,255,1)" },
         }}
+        onClick={() => dispatch(deleteImage(item?._id))}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

@@ -1,24 +1,24 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosHandler } from "../../../hooks/axiosHandler";
 
-export interface Image {
-  _id: string | null;
+export interface Video {
+  _id: string;
   URL: string;
   UserID: string;
   createdAt: Date;
   key: string;
+  statusCode: number;
 }
 
-export const uploadImages = createAsyncThunk<Image, FormData>(
-  "images/upload",
-  async (formData) => {
+const uploadvideo = createAsyncThunk<Video, FormData>(
+  "videos/upload",
+  async (FormData) => {
     try {
-      const res = await axiosHandler.post("/images/upload", formData, {
+      const res = await axiosHandler.post(`/videos/upload`, FormData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
       if (res.data.statusCode === 200) {
         return res.data.data;
       }
@@ -29,9 +29,9 @@ export const uploadImages = createAsyncThunk<Image, FormData>(
   }
 );
 
-const getImages = createAsyncThunk<Image[], void>("images/get", async () => {
+const getVideos = createAsyncThunk("videos/get", async () => {
   try {
-    const res = await axiosHandler.get("/images/get?page=1&limit=5");
+    const res = await axiosHandler.get(`/videos/get?page=1&limit=5`);
 
     if (res.data.statusCode === 200) {
       return res.data.data;
@@ -41,19 +41,19 @@ const getImages = createAsyncThunk<Image[], void>("images/get", async () => {
   }
 });
 
-const deleteImage = createAsyncThunk<Image[], string>(
-  "images/delete",
+const deleteVideo = createAsyncThunk<Video, string>(
+  "videos/delete",
   async (id) => {
     try {
-      const res = await axiosHandler.delete(`/images/delete/${id}`);
-
+      const res = await axiosHandler.delete(`/videos/delete/${id}`);
       if (res.data.statusCode === 200) {
         return res.data;
       }
+      return [];
     } catch (error) {
       console.error(error);
     }
   }
 );
 
-export { getImages, deleteImage };
+export { uploadvideo, getVideos, deleteVideo };
