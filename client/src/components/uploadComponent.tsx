@@ -48,8 +48,6 @@ export default function UploadFile({
       if (fileType === "image") {
         data = dispatch(uploadImages(formData)).unwrap();
       } else if (fileType === "video") {
-        console.log("yeh wala chala");
-        
         data = dispatch(uploadvideo(formData)).unwrap();
       }
 

@@ -4,6 +4,7 @@ import { ApiError } from "../utils/ApiError";
 import { asyncHandler } from "../utils/asyncHandler";
 import type { NextFunction, Request, Response } from "express";
 import jwt from "jsonwebtoken";
+import { ApiResponse } from "../utils/ApiResponse";
 
 const verifyJWT = asyncHandler(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -24,11 +25,18 @@ const verifyJWT = asyncHandler(
 
       const user = await UserModel.findById(decodedToken.id);
       if (!user) {
-        return res.status(401).json(new ApiError(401, "Invalid Access Token"));
+        return res
+          .status(200)
+          .clearCookie("accessToken")
+          .json(
+            new ApiResponse(200, "Invalid user please login again", undefined)
+          );
       }
       req.user = user;
       return next();
-    } catch (error) {}
+    } catch (error) {
+      console.error(error);
+    }
   }
 );
 

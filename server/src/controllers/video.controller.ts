@@ -74,19 +74,28 @@ const getAllVideos = asyncHandler(async (req: Request, res: Response) => {
     const page = Number(query.page) || 1;
     const newPage = limit * (page - 1);
 
-    const data = (await VideosModel.find({ UserID: req.user?._id })
-      .skip(newPage)
-      .limit(limit)
-      .sort({ createdAt: -1 })) as Ivideo[];
+    const data = await VideosModel.aggregate([
+      { $match: { UserID: req.user?._id } },
+      { $sort: { createdAt: -1 } },
+      {
+        $facet: {
+          metadata: [{ $count: "totalDocuments" }],
+          data: [{ $skip: newPage }, { $limit: 5 }],
+        },
+      },
+    ]);
+    const metadata = data[0].metadata[0] || { totalDocuments: 0 };
+    const result = { ...metadata, data: data[0].data };
 
-    if (!data)
+    if (!result?.totalDocuments) {
       return res.status(400).json(new ApiError(400, "Failed to get data"));
+    }
 
-    const beforeSignedURL = data.map((item) => item.key);
+    const beforeSignedURL = result?.data?.map((item: Ivideo) => item.key);
 
     const SignedURL = await getObjectURLs(beforeSignedURL);
 
-    data.forEach((item) => {
+    result.data.forEach((item: Ivideo) => {
       const matchingItem = SignedURL.find((element) =>
         element.includes(item.key)
       );
@@ -97,7 +106,7 @@ const getAllVideos = asyncHandler(async (req: Request, res: Response) => {
 
     return res
       .status(200)
-      .json(new ApiResponse(200, "Data fetch successfully", data));
+      .json(new ApiResponse(200, "Data fetch successfully", result));
   } catch (error) {
     res.status(500).json(new ApiError(500, "Something went wrong", [error]));
   }

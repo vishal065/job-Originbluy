@@ -2,6 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { axiosHandler } from "../../../hooks/axiosHandler";
 
 export interface Image {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data(data: any): unknown;
   _id: string | null;
   URL: string;
   UserID: string;
@@ -29,17 +31,21 @@ export const uploadImages = createAsyncThunk<Image, FormData>(
   }
 );
 
-const getImages = createAsyncThunk<Image[], void>("images/get", async () => {
-  try {
-    const res = await axiosHandler.get("/images/get?page=1&limit=5");
+const getImages = createAsyncThunk<Image[], number>(
+  "images/get",
+  async (page = 1) => {
 
-    if (res.data.statusCode === 200) {
-      return res.data.data;
+    try {
+      const res = await axiosHandler.get(`/images/get?page=${page}&limit=5`);
+
+      if (res.data.statusCode === 200) {
+        return res.data.data;
+      }
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error(error);
   }
-});
+);
 
 const deleteImage = createAsyncThunk<Image[], string>(
   "images/delete",

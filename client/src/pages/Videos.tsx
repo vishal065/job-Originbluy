@@ -11,20 +11,26 @@ const label = "Upload a video";
 
 function Videos() {
   const [open, setOpen] = useState(false);
-  const [page, setPage] = useState(1);
+
+  const [page, setPage] = useState({ page: 1, limit: 5 });
+  const [count, setCount] = useState(1);
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
   const state = useSelector((state: RootState) => state.videos);
   const dispatch = useDispatch<AppDispatch>();
 
-  const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
-    setPage(value);
+  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage((prev) => ({ ...prev, page: value }));
   };
 
   useEffect(() => {
-    dispatch(getVideos());
-  }, [dispatch]);
+    setCount(Math.ceil(state?.videos?.totalDocuments / page?.limit));
+  }, [page?.limit, state?.videos?.totalDocuments]);
+
+  useEffect(() => {
+    dispatch(getVideos(page?.page));
+  }, [dispatch, page?.page]);
 
   return (
     <Box
@@ -56,16 +62,17 @@ function Videos() {
           </button>
         </div>
         <Grid2 container spacing={3} paddingX={"20px"}>
-          {state?.videos &&
-            state.videos?.map((item: Video) => (
+          {state?.videos?.totalDocuments > 0 &&
+            state.videos?.data?.map((item: Video) => (
               <Grid2 key={item._id}>
                 <VideoCard item={item} />
               </Grid2>
             ))}
         </Grid2>
-        <div className="flex justify-center">
+        <div className="flex justify-center w-full h-5">
           <PaginationButtons
-            page={page > 0 ? page : 1}
+            page={page?.page > 0 ? page?.page : 1}
+            count={count > 0 ? count : 1}
             onChange={handleChange}
           />
         </div>

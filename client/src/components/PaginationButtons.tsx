@@ -6,6 +6,7 @@ import { CssBaseline } from "@mui/material";
 export default function PaginationButtons(props: {
   disableCustomTheme?: boolean;
   page: number;
+  count: number;
   onChange: (event: React.ChangeEvent<unknown>, value: number) => void;
 }) {
   return (
@@ -14,8 +15,8 @@ export default function PaginationButtons(props: {
       <Stack spacing={2} className="absolute bottom-4">
         <Pagination
           onChange={props.onChange}
-          page={props.page}
-          count={10}
+          page={props?.page}
+          count={props?.count}
           //   showFirstButton
           //   showLastButton
         />

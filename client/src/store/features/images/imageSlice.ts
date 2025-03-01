@@ -25,7 +25,7 @@ export const imageSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addCase(uploadImages.fulfilled, (state, action) => {
-      state.images.unshift(action.payload);
+      state.images?.data.unshift(action.payload);
     });
     builder.addCase(getImages.fulfilled, (state, action) => {
       state.images = action.payload;

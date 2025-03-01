@@ -29,17 +29,20 @@ const uploadvideo = createAsyncThunk<Video, FormData>(
   }
 );
 
-const getVideos = createAsyncThunk("videos/get", async () => {
-  try {
-    const res = await axiosHandler.get(`/videos/get?page=1&limit=5`);
+const getVideos = createAsyncThunk<Video[], number>(
+  "videos/get",
+  async (page: number) => {
+    try {
+      const res = await axiosHandler.get(`/videos/get?page=${page}&limit=5`);
 
-    if (res.data.statusCode === 200) {
-      return res.data.data;
+      if (res.data.statusCode === 200) {
+        return res.data.data;
+      }
+    } catch (error) {
+      console.error(error);
     }
-  } catch (error) {
-    console.error(error);
   }
-});
+);
 
 const deleteVideo = createAsyncThunk<Video, string>(
   "videos/delete",

@@ -18,7 +18,7 @@ export const VideoSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addCase(uploadvideo.fulfilled, (state, action) => {
-      state.videos.unshift(action.payload);
+      state.videos.data.unshift(action.payload);
     });
     builder.addCase(getVideos.fulfilled, (state, action) => {
       state.videos = action.payload;

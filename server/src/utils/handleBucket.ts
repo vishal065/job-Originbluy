@@ -13,6 +13,7 @@ import pLimit from "p-limit";
 const Bucket = CONFIG.BUCKET_NAME;
 
 //this method didnt work
+//we can use this method but implementation would be different
 // async function uploadFile(file: Express.Multer.File) {
 //   const uploadParams = {
 //     Bucket: CONFIG.BUCKET_NAME,
@@ -48,8 +49,9 @@ async function uploadFile(path: string, file: Express.Multer.File) {
     // Optionally, enable verbose logging for debugging:
     upload.on("httpUploadProgress", (progress) => console.log(progress));
 
-    const result: CompleteMultipartUploadCommandOutput = await upload.done();
-    if (result.Key) {
+    const result =
+      (await upload.done()) as CompleteMultipartUploadCommandOutput;
+    if (result && result.Key) {
       fs.unlink(file.path, (err) => {
         if (err) {
           console.error("Error removing temporary file:", err);
@@ -64,6 +66,7 @@ async function uploadFile(path: string, file: Express.Multer.File) {
       }
     });
     console.error("error in uploading file", error);
+    throw error;
   }
 }
 

@@ -6,24 +6,38 @@ import UploadFile from "../components/uploadComponent";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../store/store";
 import { getImages } from "../store/features/images/imagesAction";
+import PaginationButtons from "../components/PaginationButtons";
 
 const label = "Upload An Image";
 const Images: React.FC = () => {
+  const state = useSelector((state: RootState) => state.images);
   const [open, setOpen] = useState(false);
+  const [page, setPage] = useState({ page: 1, limit: 5 });
+  const [count, setCount] = useState(1);
+
+  useEffect(() => {
+    setCount(Math.ceil(state?.images?.totalDocuments / page?.limit));
+  }, [page?.limit, state?.images?.totalDocuments]);
+
+
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  const state = useSelector((state: RootState) => state.images);
+
   const dispatch = useDispatch<AppDispatch>();
-  console.log(state.images);
+ 
+
+  const handleChange = (_event: React.ChangeEvent<unknown>, value: number) => {
+    setPage((prev) => ({ ...prev, page: value }));
+  };
 
   useEffect(() => {
     async function test() {
-      const data = await dispatch(getImages()).unwrap();
+      const data = await dispatch(getImages(page?.page)).unwrap();
 
       return data;
     }
     test();
-  }, [dispatch]);
+  }, [dispatch, page?.page]);
 
   return (
     <Box
@@ -61,13 +75,20 @@ const Images: React.FC = () => {
           justifyContent="center"
           sx={{ flexWrap: "wrap" }}
         >
-          {state.images &&
-            state.images?.map((item: any) => (
+          {state?.images?.totalDocuments > 0 &&
+            state.images?.data?.map((item: any) => (
               <Grid2 key={item?.URL} sx={{ maxWidth: "100%" }}>
                 <ImageCard item={item} />
               </Grid2>
             ))}
         </Grid2>
+        <div className="flex justify-center w-full h-5 ">
+          <PaginationButtons
+            page={page?.page > 0 ? page?.page : 1}
+            count={count > 0 ? count : 1}
+            onChange={handleChange}
+          />
+        </div>
       </Container>
       {open && (
         <UploadFile
