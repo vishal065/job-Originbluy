@@ -89,7 +89,10 @@ const getAllImages = asyncHandler(async (req: Request, res: Response) => {
     const result = { ...metadata, data: data[0].data };
 
     if (!result?.totalDocuments) {
-      return res.status(400).json(new ApiError(400, "Failed to get data"));
+      result.data = [];
+      return res
+        .status(200)
+        .json(new ApiResponse(200, "No data exist", result));
     }
 
     const beforeSignedURL = result?.data?.map((item: Iimage) => item.key);
