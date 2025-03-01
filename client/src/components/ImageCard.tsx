@@ -6,6 +6,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useDispatch } from "react-redux";
 import { deleteImage } from "../store/features/images/imagesAction";
 import { AppDispatch } from "../store/store";
+import { toast } from "react-toastify";
 
 interface ImageCardProps {
   item: {
@@ -50,7 +51,19 @@ const ImageCard: React.FC<ImageCardProps> = ({ item }) => {
           backgroundColor: "rgba(255,255,255,0.8)",
           "&:hover": { backgroundColor: "rgba(255,255,255,1)" },
         }}
-        onClick={() => dispatch(deleteImage(item?._id))}
+        onClick={async () => {
+          try {
+            const data = await dispatch(deleteImage(item?._id)).unwrap();
+            if (data?.statusCode === 200) {
+              toast.success("Image deleted successfully");
+            } else {
+              toast.error("Failed to delete image");
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (error) {
+            toast.error("Error deleting image");
+          }
+        }}
       >
         <DeleteIcon fontSize="small" />
       </IconButton>

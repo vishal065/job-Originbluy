@@ -31,9 +31,11 @@ export const imageSlice = createSlice({
       state.images = action.payload;
     });
     builder.addCase(deleteImage.fulfilled, (state, action) => {
-      state.images =
-        state.images &&
-        state.images.filter((image: Image) => image._id !== action.meta.arg);
+      state.images.data =
+        state.images.data &&
+        state.images?.data.filter(
+          (image: Image) => image._id !== action.meta.arg
+        );
     });
   },
 });

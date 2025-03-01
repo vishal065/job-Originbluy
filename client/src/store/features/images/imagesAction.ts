@@ -9,6 +9,7 @@ export interface Image {
   UserID: string;
   createdAt: Date;
   key: string;
+  statusCode: number;
 }
 
 export const uploadImages = createAsyncThunk<Image, FormData>(
@@ -34,20 +35,20 @@ export const uploadImages = createAsyncThunk<Image, FormData>(
 const getImages = createAsyncThunk<Image[], number>(
   "images/get",
   async (page = 1) => {
-
     try {
       const res = await axiosHandler.get(`/images/get?page=${page}&limit=5`);
 
       if (res.data.statusCode === 200) {
         return res.data.data;
       }
+      return [];
     } catch (error) {
       console.error(error);
     }
   }
 );
 
-const deleteImage = createAsyncThunk<Image[], string>(
+const deleteImage = createAsyncThunk<Image, string>(
   "images/delete",
   async (id) => {
     try {

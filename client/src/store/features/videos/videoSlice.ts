@@ -24,9 +24,11 @@ export const VideoSlice = createSlice({
       state.videos = action.payload;
     });
     builder.addCase(deleteVideo.fulfilled, (state, action) => {
-      state.videos = state.videos.filter(
-        (video: Video) => video._id !== action.meta.arg
-      );
+      state.videos.data =
+        state.videos?.data &&
+        state.videos.data.filter(
+          (video: Video) => video._id !== action.meta.arg
+        );
     });
   },
 });
